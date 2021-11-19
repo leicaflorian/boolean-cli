@@ -26,5 +26,5 @@ npm i -g vuelean-cli
 Via terminal, navigate to the folder of an existing vue-cli project and from there, in the terminal, run
 
 ```shell
-npx vuelean-cli prepare_for_build
+vuelean-cli prepare_for_build
 ```
