@@ -1,6 +1,7 @@
 const fs = require("fs");
 const utilities = require("./utilities");
 
+
 module.exports.updateVueConfig = function () {
   const fileName = "vue.config.js";
   let vueConfigFile = {};
@@ -8,7 +9,7 @@ module.exports.updateVueConfig = function () {
   utilities.logStartCheck(fileName);
   
   if (fs.existsSync(fileName)) {
-    vueConfigFile = require("./" + fileName);
+    vueConfigFile = require(utilities.getPath(fileName));
   }
   
   // Overwrites current publicPath

@@ -1,10 +1,12 @@
+#! /usr/bin/env node
+
 const { program } = require("commander");
 const { updateEsLintConfig } = require("../scripts/handleEsLintConfig");
 const { updateVueConfig } = require("../scripts/handleVueConfig");
 const { updateGitIgnore } = require("../scripts/handleGitIgnore");
 const { updatePackageJson } = require("../scripts/handlePackageJson");
 
-program.command("list").description("List all the TODO tasks").action(list);
+program.command("prepare_for_build").description("List all the TODO tasks").action(list);
 
 function list () {
   updateGitIgnore();

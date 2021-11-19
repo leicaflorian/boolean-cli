@@ -11,7 +11,7 @@ module.exports.updateEsLintConfig = function () {
     return;
   }
 
-  const esLintFile = require("./" + fileName);
+  const esLintFile = require(utilities.getPath(fileName));
 
   // Overwrite existing value
   esLintFile["ignorePatterns"] = ["dist/*"];

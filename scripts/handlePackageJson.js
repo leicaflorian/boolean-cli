@@ -11,10 +11,10 @@ module.exports.updatePackageJson = function () {
     return;
   }
   
-  const packageJsonFile = require("./" + fileName);
+  const packageJsonFile = require(utilities.getPath(fileName));
   
   packageJsonFile.scripts["build_push"] =
-    "npm run build && git add . && git commit -n -m 'Created/Updated build' && git push";
+    "npm run build && git add --renormalize . && git commit -n -m \"Created/Updated build\" && git push";
   
   utilities.logCompletedCheck(fileName);
   

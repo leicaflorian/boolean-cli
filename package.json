@@ -2,12 +2,12 @@
   "name": "vuelean-cli",
   "version": "1.0.0",
   "description": "",
-  "main": "bin/index.js",
+  "main": "bin/vuelean.js",
   "bin": {
-    "vuelean": "bin/index.js"
+    "vuelean-cli": "bin/vuelean.js"
   },
   "scripts": {
-    "dev": "node bin/index.js list"
+    "test": "cd test_project && node ../bin/vuelean.js prepare_for_build"
   },
   "repository": {
     "type": "git",
