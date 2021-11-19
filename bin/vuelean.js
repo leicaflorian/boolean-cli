@@ -6,7 +6,10 @@ const { updateVueConfig } = require("../scripts/handleVueConfig");
 const { updateGitIgnore } = require("../scripts/handleGitIgnore");
 const { updatePackageJson } = require("../scripts/handlePackageJson");
 
-program.command("prepare_for_build").description("List all the TODO tasks").action(list);
+const v = require("../package.json").version
+
+program.version(v, '-v, --version');
+program.command("prepare_for_build").description("Updates all necessary files to be able to build and push dist folder.").action(list);
 
 function list () {
   updateGitIgnore();

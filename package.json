@@ -7,7 +7,8 @@
     "vuelean-cli": "bin/vuelean.js"
   },
   "scripts": {
-    "test": "cd test_project && node ../bin/vuelean.js prepare_for_build"
+    "test": "cd test_project && node ../bin/vuelean.js prepare_for_build",
+    "publish_minor": "npm version minor && npm publish"
   },
   "repository": {
     "type": "git",
