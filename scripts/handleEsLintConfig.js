@@ -7,7 +7,7 @@ module.exports.updateEsLintConfig = function () {
   utilities.logStartCheck(fileName);
 
   if (!fs.existsSync(fileName)) {
-    utilities.warnNoFileFound(fileName);
+    // utilities.warnNoFileFound(fileName);
     return;
   }
 
