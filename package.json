@@ -4,10 +4,15 @@
   "description": "",
   "main": "bin/vuelean.js",
   "bin": {
-    "vuelean-cli": "bin/vuelean.js"
+    "vuelean-cli": "bin/vuelean.js",
+    "boolean-cli": "bin/boolean.js"
   },
   "scripts": {
-    "test": "cd test_project && node ../bin/vuelean.js prepare_for_build"
+    "test": "cd test_project && node ../bin/vuelean.js prepare_for_build",
+    "boolean-rename": "cd test_project && node ../bin/boolean.js rename",
+    "boolean-rename-upload": "cd test_project && node ../bin/boolean.js rename -u",
+    "boolean-rename-revert": "cd test_project && node ../bin/boolean.js rename -r",
+    "boolean-config": "cd test_project && node ../bin/boolean.js config -vf '/Volumes/GoogleDrive-101798383955124608246/Il mio Drive/test'"
   },
   "repository": {
     "type": "git",
@@ -22,7 +27,8 @@
   "dependencies": {
     "chalk": "^4.1.2",
     "commander": "^8.3.0",
-    "conf": "^10.0.3"
+    "conf": "^10.1.2",
+    "inquirer": "^8.2.2"
   },
   "publishConfig": {
     "global": true
