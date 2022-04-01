@@ -54,28 +54,43 @@ program
   .option("-r, --revert", "Revert the rename operation.")
   .option(
     "-u, --upload",
-    "Upload renamed files to Google Drive folder if this is configured."
+    'Upload renamed files to Google Drive folder if this is configured.'
   )
   .action((options) => {
     if (options.revert) {
-      revert();
+      revert()
     } else {
-      rename(options.upload);
+      rename(options.upload)
     }
   });
 
-const rootFolder = utilities.getPath();
+const rootFolder = utilities.getPath()
 
-function rename(upload = false) {
+function getVideoNumber () {
+  let toReturn = 0
+  
+  if (config.get('videoFolder')) {
+    const files = fs.readdirSync(config.get('videoFolder'))
+    const videoFiles = files.filter(file => file.endsWith('.mp4'))
+    
+    const lastFile = videoFiles[videoFiles.length - 1]
+    
+    toReturn = lastFile.match(/^\d+/)[0]
+  }
+  
+  return toReturn ? +toReturn + 1 : 0
+}
+
+function rename (upload = false) {
   const videoFiles = fs.readdirSync(rootFolder).reduce((acc, file) => {
-    const ext = path.extname(file);
-
-    if (ext === ".mp4") {
-      acc.push(file);
+    const ext = path.extname(file)
+    
+    if (ext === '.mp4') {
+      acc.push(file)
     }
-
-    return acc;
-  }, []);
+    
+    return acc
+  }, [])
 
   if (upload && !config.get("videoFolder")) {
     return console.warn(
@@ -92,19 +107,23 @@ function rename(upload = false) {
   inquirer
     .prompt([
       {
-        name: "video_number",
-        message: "Indica il numero del video",
-        type: "number",
-        default: 0,
+        name: 'video_number',
+        message: 'Indica il numero del video',
+        type: 'number',
+        default: getVideoNumber(),
         transformer: (input) => {
-          return input.toString().padStart(2, "0");
+          if (!input || Number.isNaN(+input)) {
+            return input
+          }
+      
+          return input.toString().padStart(2, '0')
         },
         validate: (input) => {
-          if (!input) {
+          if (!input || Number.isNaN(+input)) {
             // Pass the return value in the done callback
-            return "You need to provide a video number";
+            return 'You need to provide a video number'
           } else {
-            return true;
+            return true
           }
         },
       },
@@ -222,11 +241,14 @@ function onInputsReceived(answers, videoFiles, upload) {
           fs.renameSync(oldPath, newPath);
 
           if (config.get("videoFolder") && upload) {
-            console.log(`Uploading file ${file.new} to Google Drive`);
+            console.log(` - Uploading file ${file.new} to Google Drive`)
+            const filePath = path.join(config.get('videoFolder'), file.new)
+  
             fs.copyFileSync(
               newPath,
-              path.join(config.get("videoFolder"), file.new)
-            );
+              filePath
+            )
+            console.log(` - File uploaded to ${filePath}`)
           }
         });
       } else {
