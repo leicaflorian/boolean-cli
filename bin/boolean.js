@@ -75,10 +75,10 @@ function getVideoNumber () {
     
     const lastFile = videoFiles[videoFiles.length - 1]
     
-    toReturn = lastFile.match(/^\d+/)[0]
+    toReturn = lastFile ? lastFile.match(/^\d+/)[0] : null
   }
   
-  return toReturn ? +toReturn + 1 : 0
+  return toReturn ? +toReturn + 1 : 1
 }
 
 function rename (upload = false) {
