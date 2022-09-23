@@ -1,6 +1,6 @@
 {
-  "name": "vuelean-cli",
-  "version": "1.2.2",
+  "name": "boolean-cli",
+  "version": "2.1.0",
   "description": "",
   "main": "bin/boolean.js",
   "bin": {
