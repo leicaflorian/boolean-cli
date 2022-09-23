@@ -39,9 +39,25 @@ function makeFolder(folder) {
   }
 }
 
+/**
+ * 
+ * @param {string} name 
+ * @param {string} extension 
+ */
+function prepareFileName(name, extension, defaultName = null) {
+  let fileName = name ?? defaultName ?? "";
+
+  if (!fileName.endsWith("." + extension)) {
+    fileName += "." + extension
+  }
+
+  return fileName
+}
+
 module.exports = {
   readTemplate,
   makeFolder,
+  prepareFileName,
   getPath(...pathSections) {
     return path.resolve(...pathSections);
   }
