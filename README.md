@@ -4,7 +4,7 @@ This is simple cli created for Boolean students and tutors to simplify the job o
 
 ## What does it do?
 
-Different things. To explore it run 
+Different things. To explore them run 
 ```shell
 boolean-cli --help
 ```
