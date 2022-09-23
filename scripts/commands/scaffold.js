@@ -50,7 +50,7 @@ function css(fileName) {
 }
 
 /**
- * Create necessary folder and files for images
+ * Create necessary folder and files for
  */
 function img() {
   info("[IMG]", "Starting...")
