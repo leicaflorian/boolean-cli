@@ -1,44 +1,57 @@
 const fs = require("fs-extra");
 const path = require("path")
 const { startCase } = require("lodash");
-const { readTemplate, makeFolder, getPath } = require("../utilities/fs");
+const { readTemplate, makeFolder, getPath, prepareFileName } = require("../utilities/fs");
 const { info } = require("../utilities/logs");
+const { Command } = require("commander");
 
-
-function html(withCss = false, withJs = false) {
-  info("\n[HTML]", "Starting...")
+/**
+ * Create necessary files for html projects
+ * 
+ * @param {string} fileName
+ * @param {boolean} withCss
+ * @param {boolean} withJs
+ */
+function html(fileName, withCss = false, withJs = false) {
+  info("[HTML]", "Starting...")
 
   const mustacheOptions = {
-    title: startCase(path.basename(path.resolve(".")))
+    title: startCase(path.basename(path.resolve("."))),
+    css: withCss,
+    js: withJs
   }
 
-  if (withCss) {
-    mustacheOptions["css"] = true;
-  }
-
+  const htmlFile = prepareFileName(fileName, "html", "index")
   const template = readTemplate("index.html", mustacheOptions)
 
-  fs.writeFileSync("index.html", template)
+  fs.writeFileSync(htmlFile, template)
 
-  info(null, "Created '/index.html'")
-
+  info(null, `Created '/${htmlFile}'`)
   info("[HTML]", "Completed!\n")
 }
 
-function css() {
+/**
+ * Create necessary files for CSS
+ * 
+ * @param {string} fileName
+ */
+function css(fileName) {
   info("[CSS]", "Starting...")
 
   makeFolder("css")
 
+  const cssFile = prepareFileName(fileName, "css", "style")
   const template = readTemplate("style.css")
 
-  fs.writeFileSync("css/style.css", template)
+  fs.writeFileSync(`css/${cssFile}`, template)
 
-  info(null, "Created '/css/style.css'")
-
+  info(null, `Created '/css/${cssFile}'`)
   info("[CSS]", "Completed!\n")
 }
 
+/**
+ * Create necessary folder and files for images
+ */
 function img() {
   info("[IMG]", "Starting...")
 
@@ -53,24 +66,37 @@ function img() {
   info("[IMG]", "Completed!\n")
 }
 
+/**
+ * 
+ * @param {Command} program 
+ * @param {conf} conf 
+ */
 module.exports = function (program, conf) {
   program
     .command("scaffold")
-    .description("Create the basic for different projects.")
+    .description("Create basic scaffold for different projects.")
+    .usage("[option] [value]")
     .option("-a, --all", "Basic HTML, CSS and Imgs")
-    .option("-h, --html", "Basic HTML")
-    .option("-c, --css", "Basic CSS")
+    .option("-h, --html [fileName]", "Basic HTML (default: index.html)")
+    .option("-c, --css [fileName]", "Basic CSS (default: style.css)")
     .option("-i, --img", "Basic Imgs")
     .action((options) => {
+      console.log("\n");
 
       if (options.html) {
-        html()
-      } else if (options.css) {
-        css(options.css)
-      } else if (options.img) {
+        html(typeof options.html === "string" ? options.html : null)
+      }
+
+      if (options.css) {
+        css(typeof options.css === "string" ? options.css : null)
+      }
+
+      if (options.img) {
         img()
-      } else if (options.all) {
-        html(true)
+      }
+
+      if (options.all) {
+        html(null, true)
         css()
         img()
       }
