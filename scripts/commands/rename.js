@@ -4,23 +4,68 @@ const path = require("path");
 const inquirer = require("inquirer");
 const { up } = require("inquirer/lib/utils/readline");
 const { getPath } = require("../utilities/fs");
+const chalk = require("chalk");
+const logs = require("../utilities/logs");
 
 const rootFolder = getPath()
 let config;
 
-function getVideoNumber() {
-  let toReturn = 0
+/**
+ * 
+ * @returns {string|null}
+ */
+function getLastRemoteFile() {
+  let toReturn = null;
 
   if (config.get('videoFolder')) {
     const files = fs.readdirSync(config.get('videoFolder'))
     const videoFiles = files.filter(file => file.endsWith('.mp4'))
 
-    const lastFile = videoFiles[videoFiles.length - 1]
-
-    toReturn = lastFile ? lastFile.match(/^\d+/)[0] : null
+    if (videoFiles.length > 0) {
+      toReturn = videoFiles[videoFiles.length - 1]
+    }
   }
 
-  return toReturn ? +toReturn + 1 : 1
+  return toReturn
+}
+
+function getVideoNumber() {
+  let toReturn = 0
+
+  const lastFile = getLastRemoteFile()
+
+  if (lastFile) {
+    const fileData = parseVideoFileName(lastFile);
+
+    toReturn = fileData.videoNum + 1
+
+    if (fileData.videoPart === 1) {
+      toReturn = fileData.videoNum
+    }
+  }
+
+  return toReturn ? +toReturn : 1
+}
+
+function getVideoPart(videoFiles) {
+  let toReturn = videoFiles.length <= 1 ? null : 1
+
+  // if multipart options is false, avoid calculating the part
+  if (!config.get("multipart")) {
+    return toReturn
+  }
+
+  const lastFile = getLastRemoteFile()
+
+  if (lastFile) {
+    const fileData = parseVideoFileName(lastFile);
+
+    if (fileData.videoPart === 1) {
+      toReturn = 2
+    }
+  }
+
+  return toReturn
 }
 
 function rename(upload = false) {
@@ -36,7 +81,8 @@ function rename(upload = false) {
 
   if (upload && !config.get("videoFolder")) {
     return console.warn(
-      "Cartella Google Drive non configurata.\nPer configurarla usa il comando 'boolean-cli config -f <path>'"
+      chalk.red(`Cartella Google Drive non configurata.\nPer configurarla usa il comando: 
+      ${chalk.yellow("boolean-cli config -f [folder_path]")}`)
     );
   }
 
@@ -44,22 +90,24 @@ function rename(upload = false) {
     return console.warn("Nessun file da rinominare trovato.");
   }
 
-  console.log("file da analizzare:", videoFiles);
+  logs.info("[Rename]", "File trovati: " + videoFiles.join(",") + "\n");
+
+  const lastFile = getLastRemoteFile()
 
   inquirer
     .prompt([
       {
         name: 'video_number',
-        message: 'Indica il numero del video',
+        message: `Indica il ${chalk.bold.green("numero")} del ${chalk.bold.green("video")} ------------------:`,
         type: 'number',
         default: getVideoNumber(),
-        transformer: (input) => {
+        /* transformer: (input) => {
           if (!input || Number.isNaN(+input)) {
             return input
           }
 
           return input.toString().padStart(2, '0')
-        },
+        }, */
         validate: (input) => {
           if (!input || Number.isNaN(+input)) {
             // Pass the return value in the done callback
@@ -71,16 +119,16 @@ function rename(upload = false) {
       },
       {
         name: "video_part_number",
-        message: "Indica la parte del video",
+        message: `Indica la ${chalk.bold.green("parte")} del ${chalk.bold.green("video")}.\n  ${chalk.italic("(Lasciare vuoto in caso di parte unica)")} -----:`,
         type: "number",
-        default: videoFiles.length <= 1 ? 0 : 1,
+        default: getVideoPart(videoFiles),
         transformer: (input) => {
           return Number.isNaN(input) ? "" : input;
         },
       },
       {
         name: "lesson_code",
-        message: "Indica il numero della lezione",
+        message: `Indica il ${chalk.bold.green("numero")} della ${chalk.bold.green('lezione')}\n  ${chalk.italic("(Lasciare vuoto in caso di parte unica)")} -----:`,
         type: "number",
         transformer: (input) => {
           return Number.isNaN(input) ? "" : input;
@@ -88,12 +136,12 @@ function rename(upload = false) {
       },
       {
         name: "lesson_name",
-        message: "Indica il nome da assegnare alla lezione",
+        message: `Indica il ${chalk.bold.green("titolo")} da assegnare alla ${chalk.bold.green("lezione")} --:`,
         type: "input",
         validate: (input) => {
           if (!input || !input.trim()) {
             // Pass the return value in the done callback
-            return "You need to provide a lesson_name";
+            return "E' necessario assegnare un titolo alla lezione";
           } else {
             return true;
           }
@@ -127,6 +175,8 @@ function revert() {
 
     if (fs.existsSync(newPath)) {
       fs.renameSync(newPath, oldPath);
+
+      logs.info(null, `Restored file: ${chalk.grey(file.new)} => ${chalk.green(file.old)}`)
     }
   });
 
@@ -134,23 +184,11 @@ function revert() {
 }
 
 function onInputsReceived(answers, videoFiles, upload) {
-  const { video_number, video_part_number, lesson_code, lesson_name } = answers;
-  const date = new Intl.DateTimeFormat("it-IT", {
-    day: "2-digit",
-    month: "short",
-  })
-    .format(new Date())
-    .replace(" ", "")
-    .toUpperCase();
-
   const toRename = [];
 
   for (let index = 0; index < videoFiles.length; index++) {
     const file = videoFiles[index];
-    const newName = `${video_number.toString().padStart(2, "0")}${video_part_number ? "_" + (video_part_number + index) : ""
-      }-${date}-${lesson_code ? lesson_code + "-" : ""}${lesson_name
-        .toLowerCase()
-        .replace(/ /g, "_")}.mp4`;
+    const newName = createVideoFileName(answers, index)
 
     toRename.push({
       old: file,
@@ -163,12 +201,15 @@ function onInputsReceived(answers, videoFiles, upload) {
       name: "confirm",
       type: "confirm",
       message:
-        "Confermi di voler rinominare i seguenti file?" +
-        `\n   - ${toRename
-          .map((file) => `${file.old} => ${file.new}`)
-          .join("\n   - ")}`,
+        chalk.yellow("Confermi di voler rinominare i seguenti file?") +
+        `\n - ${toRename
+          .map((file) => `${chalk.bold.grey(file.old)} => ${chalk.bold.green(file.new)}`)
+          .join("\n   - ")
+        } `,
     },
   ];
+
+  console.log("\n");
 
   inquirer
     .prompt(questions)
@@ -189,7 +230,7 @@ function onInputsReceived(answers, videoFiles, upload) {
               newPath,
               filePath
             )
-            console.log(` - File uploaded to ${filePath}`)
+            console.log(` - File uploaded to ${filePath} `)
           }
         });
       } else {
@@ -216,17 +257,73 @@ function createInternalRenameDetails(filesToRename) {
   );
 }
 
+/**
+ * 
+ * @param {string} file 
+ * @return {{videoNum: number, videoPart: number, lessonNum: number, date: string, fileName: string}}
+ */
+function parseVideoFileName(file) {
+  // 4 blocks = video_num - date - lesson_num - file_name
+  // 3 blocks = video_num - date - file_name
+  const blocks = file.split("-")
+
+  const videoNum = {
+    num: blocks[0].split("_")[0],
+    part: blocks[0].split("_")[1] ?? null,
+  }
+
+  const date = blocks[1];
+  const lessonNum = blocks.length === 4 ? blocks[2] : null;
+  const fileName = blocks.length === 4 ? blocks[3] : blocks[2];
+
+  return {
+    videoNum: +videoNum.num,
+    videoPart: videoNum.part ? +videoNum.part : null,
+    lessonNum: lessonNum ? +lessonNum : null,
+    date,
+    fileName
+  }
+}
+
+function createVideoFileName(answers, index) {
+  const { video_number, video_part_number, lesson_code, lesson_name } = answers;
+  const date = new Intl.DateTimeFormat("it-IT", {
+    day: "2-digit",
+    month: "short",
+  })
+    .format(new Date())
+    .replace(" ", "")
+    .toUpperCase();
+
+  const newName = [];
+  let videoNum = [video_number.toString().padStart(2, "0")];
+
+  if (video_part_number) {
+    videoNum.push(video_part_number + index)
+  }
+
+  newName.push(videoNum.join("_"))
+  newName.push(date)
+
+  if (lesson_code) {
+    newName.push(lesson_code)
+  }
+
+  newName.push(lesson_name.toLowerCase().replace(/ /g, "_"))
+
+  return newName.join("-") + ".mp4";
+}
+
 module.exports = function (program, _conf) {
   config = _conf
 
   program
     .command("rename")
-    .description("Rename Zoom files using the Boolean pattern.")
+    .description("Rename Zoom files using the Boolean pattern and eventually copy them to a specific folder like a Google Drive one.\n\n" +
+      "To be able to copy the file to a folder, first that folder must be configured. To do so, just run\n" +
+      chalk.yellow("boolean-cli config -f [folder_path]"))
     .option("-r, --revert", "Revert the rename operation.")
-    .option(
-      "-u, --upload",
-      'Upload renamed files to Google Drive folder if this is configured.'
-    )
+    .option("-u, --upload", "Upload renamed files to Google Drive folder, if this is configured.")
     .action((options) => {
       if (options.revert) {
         revert()
@@ -235,3 +332,7 @@ module.exports = function (program, _conf) {
       }
     });
 }
+/* 
+console.log(parseVideoFileName("08_2-23SET-119-css_flex.mp4"));
+console.log(parseVideoFileName("08-23SET-119-css_flex.mp4"));
+console.log(parseVideoFileName("08-23SET-css_flex.mp4")); */
