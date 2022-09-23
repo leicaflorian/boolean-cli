@@ -60,9 +60,7 @@ function getVideoPart(videoFiles) {
   if (lastFile) {
     const fileData = parseVideoFileName(lastFile);
 
-    if (fileData.videoPart === 1) {
-      toReturn = 2
-    }
+    toReturn = fileData.videoPart === 1 ? 2 : 1
   }
 
   return toReturn
@@ -119,20 +117,20 @@ function rename(upload = false) {
       },
       {
         name: "video_part_number",
-        message: `Indica la ${chalk.bold.green("parte")} del ${chalk.bold.green("video")}.\n  ${chalk.italic("(Lasciare vuoto in caso di parte unica)")} -----:`,
+        message: `Indica la ${chalk.bold.green("parte")} del ${chalk.bold.green("video")}.\n  ${chalk.italic("(Scrivere 0 in caso di parte unica)")} ---------:`,
         type: "number",
         default: getVideoPart(videoFiles),
         transformer: (input) => {
           return Number.isNaN(input) ? "" : input;
-        },
+        }
       },
       {
         name: "lesson_code",
-        message: `Indica il ${chalk.bold.green("numero")} della ${chalk.bold.green('lezione')}\n  ${chalk.italic("(Lasciare vuoto in caso di parte unica)")} -----:`,
+        message: `Indica il ${chalk.bold.green("numero")} della ${chalk.bold.green('lezione')}\n  ${chalk.italic("(Lasciare vuoto in caso non serva)")} ----------:`,
         type: "number",
         transformer: (input) => {
           return Number.isNaN(input) ? "" : input;
-        },
+        }
       },
       {
         name: "lesson_name",
