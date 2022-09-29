@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/leicaflorian/vuelean-cli.git"
+    "url": "git+https://github.com/leicaflorian/boolean-cli.git"
   },
   "author": "Leica Florian",
   "license": "ISC",
