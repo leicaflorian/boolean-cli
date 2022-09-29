@@ -27,6 +27,8 @@ function html (settings) {
   
   fs.writeFileSync(htmlFile, template)
   
+  addFavIcon();
+  
   info(null, `Created '/${htmlFile}'`)
   info('[HTML]', 'Completed!\n')
 }
@@ -65,6 +67,14 @@ function img () {
   })
   
   info('[IMG]', 'Completed!\n')
+}
+
+function addFavIcon () {
+  const favIconPath = path.resolve('imgs/favicon.ico')
+  
+  if (!fs.existsSync(favIconPath)) {
+    fs.copyFileSync(getPath(__dirname, '../templates/favicon.ico'), favIconPath)
+  }
 }
 
 /**
