@@ -1,17 +1,13 @@
 {
   "name": "boolean-cli",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "",
   "main": "bin/boolean.js",
   "bin": {
     "boolean-cli": "bin/boolean.js"
   },
   "scripts": {
-    "test": "cd test_project && node ../bin/vuelean.js prepare_for_build",
-    "boolean-rename": "cd test_project && node ../bin/boolean.js rename",
-    "boolean-rename-upload": "cd test_project && node ../bin/boolean.js rename -u",
-    "boolean-rename-revert": "cd test_project && node ../bin/boolean.js rename -r",
-    "boolean-config": "cd test_project && node ../bin/boolean.js config -vf '/Volumes/GoogleDrive-101798383955124608246/Il mio Drive/test'"
+
   },
   "repository": {
     "type": "git",
@@ -20,9 +16,9 @@
   "author": "Leica Florian",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/leicaflorian/vuelean-cli/issues"
+    "url": "https://github.com/leicaflorian/boolean-cli/issues"
   },
-  "homepage": "https://github.com/leicaflorian/vuelean-cli#readme",
+  "homepage": "https://github.com/leicaflorian/boolean-cli#readme",
   "dependencies": {
     "chalk": "^4.1.2",
     "commander": "^8.3.0",
