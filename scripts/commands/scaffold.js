@@ -1,105 +1,107 @@
-const fs = require("fs-extra");
-const path = require("path")
-const { startCase } = require("lodash");
-const { readTemplate, makeFolder, getPath, prepareFileName } = require("../utilities/fs");
-const { info } = require("../utilities/logs");
-const { Command } = require("commander");
+const fsExtra = require('fs-extra')
+const fs = require('fs')
+const path = require('path')
+const { startCase } = require('lodash')
+const { Command } = require('commander')
+const { readTemplate, makeFolder, getPath, prepareFileName } = require('../utilities/fs')
+const { info } = require('../utilities/logs')
 
 /**
  * Create necessary files for html projects
- * 
- * @param {string} fileName
- * @param {boolean} withCss
- * @param {boolean} withJs
+ *
+ * @param {{fileName: string, cssFileName?: string, jsFileName?: string, withCss?: boolean, withJs?: boolean}} settings
  */
-function html(fileName, withCss = false, withJs = false) {
-  info("[HTML]", "Starting...")
-
+function html (settings) {
+  info('[HTML]', 'Starting...')
+  
   const mustacheOptions = {
-    title: startCase(path.basename(path.resolve("."))),
-    css: withCss,
-    js: withJs
+    title: startCase(path.basename(path.resolve('.'))) + (settings.fileName ? ` | ${startCase(settings.fileName)}` : ''),
+    css: settings.withCss,
+    cssFileName: prepareFileName(settings.cssFileName, 'css', 'style'),
+    js: settings.withJs,
+    jsFileName: prepareFileName(settings.jsFileName, 'js', 'script')
   }
-
-  const htmlFile = prepareFileName(fileName, "html", "index")
-  const template = readTemplate("index.html", mustacheOptions)
-
+  
+  const htmlFile = prepareFileName(settings.fileName, 'html', 'index')
+  const template = readTemplate('index.html', mustacheOptions)
+  
   fs.writeFileSync(htmlFile, template)
-
+  
   info(null, `Created '/${htmlFile}'`)
-  info("[HTML]", "Completed!\n")
+  info('[HTML]', 'Completed!\n')
 }
 
 /**
  * Create necessary files for CSS
- * 
+ *
  * @param {string} fileName
  */
-function css(fileName) {
-  info("[CSS]", "Starting...")
-
-  makeFolder("css")
-
-  const cssFile = prepareFileName(fileName, "css", "style")
-  const template = readTemplate("style.css")
-
+function css (fileName) {
+  info('[CSS]', 'Starting...')
+  
+  makeFolder('css')
+  
+  const cssFile = prepareFileName(fileName, 'css', 'style')
+  const template = readTemplate('style.css')
+  
   fs.writeFileSync(`css/${cssFile}`, template)
-
+  
   info(null, `Created '/css/${cssFile}'`)
-  info("[CSS]", "Completed!\n")
+  info('[CSS]', 'Completed!\n')
 }
 
 /**
  * Create necessary folder and files for
  */
-function img() {
-  info("[IMG]", "Starting...")
-
-  fs.copySync(getPath(__dirname, "../templates/imgs"), "imgs")
-
-  info(null, "Created folder '/imgs'")
-
-  fs.readdirSync(getPath(__dirname, "../templates/imgs")).forEach(file => {
+function img () {
+  info('[IMG]', 'Starting...')
+  
+  fsExtra.copySync(getPath(__dirname, '../templates/imgs'), 'imgs', null)
+  
+  info(null, 'Created folder \'/imgs\'')
+  
+  fs.readdirSync(getPath(__dirname, '../templates/imgs')).forEach(file => {
     info(null, `Created file '/imgs/${file}'`)
   })
-
-  info("[IMG]", "Completed!\n")
+  
+  info('[IMG]', 'Completed!\n')
 }
 
 /**
- * 
- * @param {Command} program 
- * @param {conf} conf 
+ * @param {Command} program
  */
-module.exports = function (program, conf) {
+module.exports = function (program) {
   program
-    .command("scaffold")
-    .description("Create basic scaffold for different projects.")
-    .usage("[option] [value]")
-    .option("-a, --all", "Basic HTML, CSS and Imgs")
-    .option("-h, --html [fileName]", "Basic HTML (default: index.html)")
-    .option("-c, --css [fileName]", "Basic CSS (default: style.css)")
-    .option("-i, --img", "Basic Imgs")
-    .action((options) => {
-      console.log("\n");
-
-      if (options.html) {
-        html(typeof options.html === "string" ? options.html : null)
+    .command('scaffold')
+    .description('Create basic scaffold for different projects.')
+    .argument('[string]', 'file title', null)
+    .usage('[file_name] [option] [value]')
+    .option('-a, --all', 'Basic HTML, CSS and Imgs')
+    .option('-h, --html [fileName]', 'Basic HTML (default: index.html)')
+    .option('-c, --css [fileName]', 'Basic CSS (default: style.css)')
+    .option('-i, --img', 'Basic Imgs')
+    /**
+     * @param {string} fileName
+     * @param {{html, css, img, all}} options
+     */
+    .action((fileName, options) => {
+      console.log('\n')
+      
+      if (options.html || options.all) {
+        html({
+            fileName: typeof options.html === 'string' ? options.html : fileName,
+            cssFileName: typeof options.css === 'string' ? options.css : fileName,
+            withCss: options.css || options.all
+          }
+        )
       }
-
-      if (options.css) {
-        css(typeof options.css === "string" ? options.css : null)
+      
+      if (options.css || options.all) {
+        css(typeof options.css === 'string' ? options.css : fileName)
       }
-
-      if (options.img) {
+      
+      if (options.img || options.all) {
         img()
       }
-
-      if (options.all) {
-        html(null, true)
-        css()
-        img()
-      }
-
-    });
+    })
 }

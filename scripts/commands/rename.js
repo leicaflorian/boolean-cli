@@ -11,7 +11,7 @@ const rootFolder = getPath()
 let config;
 
 /**
- * 
+ *
  * @returns {string|null}
  */
 function getLastRemoteFile() {
@@ -79,7 +79,7 @@ function rename(upload = false) {
 
   if (upload && !config.get("videoFolder")) {
     return console.warn(
-      chalk.red(`Cartella Google Drive non configurata.\nPer configurarla usa il comando: 
+      chalk.red(`Cartella Google Drive non configurata.\nPer configurarla usa il comando:
       ${chalk.yellow("boolean-cli config -f [folder_path]")}`)
     );
   }
@@ -256,8 +256,8 @@ function createInternalRenameDetails(filesToRename) {
 }
 
 /**
- * 
- * @param {string} file 
+ *
+ * @param {string} file
  * @return {{videoNum: number, videoPart: number, lessonNum: number, date: string, fileName: string}}
  */
 function parseVideoFileName(file) {
@@ -317,7 +317,7 @@ module.exports = function (program, _conf) {
 
   program
     .command("rename")
-    .description("Rename Zoom files using the Boolean pattern and eventually copy them to a specific folder like a Google Drive one.\n\n" +
+    .description("Rename Zoom files using the Boolean pattern and eventually copy them to a specific folder like a Google Drive one.\n" +
       "To be able to copy the file to a folder, first that folder must be configured. To do so, just run\n" +
       chalk.yellow("boolean-cli config -f [folder_path]"))
     .option("-r, --revert", "Revert the rename operation.")
@@ -330,7 +330,7 @@ module.exports = function (program, _conf) {
       }
     });
 }
-/* 
+/*
 console.log(parseVideoFileName("08_2-23SET-119-css_flex.mp4"));
 console.log(parseVideoFileName("08-23SET-119-css_flex.mp4"));
 console.log(parseVideoFileName("08-23SET-css_flex.mp4")); */
