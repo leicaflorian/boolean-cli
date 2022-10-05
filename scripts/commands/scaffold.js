@@ -72,6 +72,10 @@ function img () {
 function addFavIcon () {
   const favIconPath = path.resolve('imgs/favicon.ico')
   
+  if (!fs.existsSync("imgs")) {
+    fs.mkdirSync("imgs")
+  }
+  
   if (!fs.existsSync(favIconPath)) {
     fs.copyFileSync(getPath(__dirname, '../templates/favicon.ico'), favIconPath)
   }
