@@ -19,7 +19,7 @@ function html (settings) {
     css: settings.withCss,
     cssFileName: prepareFileName(settings.cssFileName, 'css', 'style'),
     js: settings.withJs,
-    jsFileName: prepareFileName(settings.jsFileName, 'js', 'script')
+    jsFileName: prepareFileName(settings.jsFileName, 'js', 'main')
   }
   
   const htmlFile = prepareFileName(settings.fileName, 'html', 'index')
@@ -51,6 +51,26 @@ function css (fileName) {
   info(null, `Created '/css/${cssFile}'`)
   info('[CSS]', 'Completed!\n')
 }
+
+/**
+ * Create necessary files for JS
+ *
+ * @param {string} fileName
+ */
+function js (fileName) {
+  info('[JS]', 'Starting...')
+  
+  makeFolder('js')
+  
+  const cssFile = prepareFileName(fileName, 'js', 'main')
+  const template = readTemplate('main.js')
+  
+  fs.writeFileSync(`js/${cssFile}`, template)
+  
+  info(null, `Created '/js/${cssFile}'`)
+  info('[JS]', 'Completed!\n')
+}
+
 
 /**
  * Create necessary folder and files for
@@ -93,6 +113,7 @@ module.exports = function (program) {
     .option('-a, --all', 'Basic HTML, CSS and Imgs')
     .option('-h, --html [fileName]', 'Basic HTML (default: index.html)')
     .option('-c, --css [fileName]', 'Basic CSS (default: style.css)')
+    .option('-j, --js [fileName]', 'Basic JS (default: main.js)')
     .option('-i, --img', 'Basic Imgs')
     /**
      * @param {string} fileName
@@ -105,13 +126,19 @@ module.exports = function (program) {
         html({
             fileName: typeof options.html === 'string' ? options.html : fileName,
             cssFileName: typeof options.css === 'string' ? options.css : fileName,
-            withCss: options.css || options.all
+            jsFileName: typeof options.js === 'string' ? options.js : fileName,
+            withCss: options.css || options.all,
+            withJs: options.js 
           }
         )
       }
       
       if (options.css || options.all) {
         css(typeof options.css === 'string' ? options.css : fileName)
+      }
+
+      if (options.js || options.all) {
+        js(typeof options.js === 'string' ? options.js : fileName)
       }
       
       if (options.img || options.all) {
