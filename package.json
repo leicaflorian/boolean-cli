@@ -1,14 +1,12 @@
 {
   "name": "boolean-cli",
-  "version": "2.1.3",
+  "version": "2.2.1",
   "description": "",
   "main": "bin/boolean.js",
   "bin": {
     "boolean-cli": "bin/boolean.js"
   },
-  "scripts": {
-
-  },
+  "scripts": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/leicaflorian/boolean-cli.git"
@@ -20,13 +18,16 @@
   },
   "homepage": "https://github.com/leicaflorian/boolean-cli#readme",
   "dependencies": {
+    "@types/shelljs": "^0.8.11",
     "chalk": "^4.1.2",
+    "clear": "^0.1.0",
     "commander": "^8.3.0",
     "conf": "^10.1.2",
     "fs-extra": "^10.1.0",
     "inquirer": "^8.2.2",
     "lodash": "^4.17.21",
-    "mustache": "^4.2.0"
+    "mustache": "^4.2.0",
+    "shelljs": "^0.8.5"
   },
   "publishConfig": {
     "global": true
