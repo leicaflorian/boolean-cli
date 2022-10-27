@@ -6,6 +6,7 @@ const { up } = require("inquirer/lib/utils/readline");
 const { getPath } = require("../utilities/fs");
 const chalk = require("chalk");
 const logs = require("../utilities/logs");
+const { writeSection } = require('../utilities/ui')
 
 const rootFolder = getPath()
 let config;
@@ -323,6 +324,8 @@ module.exports = function (program, _conf) {
     .option("-r, --revert", "Revert the rename operation.")
     .option("-u, --upload", "Upload renamed files to Google Drive folder, if this is configured.")
     .action((options) => {
+      writeSection('RENAME')
+  
       if (options.revert) {
         revert()
       } else {
