@@ -13,6 +13,7 @@ const { readTemplate, makeFolder, getPath, prepareFileName } = require('../utili
 const { info, error, log } = require('../utilities/logs')
 const chalk = require('chalk')
 const { writeSection } = require('../utilities/ui')
+const shell = require('shelljs')
 
 /**
  * Create necessary files for html projects
@@ -162,6 +163,33 @@ async function showWizard () {
   ])
 }
 
+function askForInitialCommit () {
+  // if git command not available, avoid asking for initial commit
+  if (!shell.which('git')) {
+    return
+  }
+  
+  inquirer.prompt([
+    {
+      name: 'make_commit',
+      message: `Si desidera creare un commit iniziale con i file appena creati?`,
+      type: 'confirm',
+      default: true
+    }
+  ]).then(answers => {
+    if (answers.make_commit) {
+      shell.exec('git add .')
+      shell.exec('git commit -m "Initial scaffolding"')
+      
+      log(`Commit creato.\n`)
+      
+      shell.exec('git push')
+      
+      log(`Dati inviati al repository remoto.\n`)
+    }
+  })
+}
+
 /**
  * @param {string} fileName
  * @param {ScaffoldOptions} options
@@ -203,6 +231,8 @@ async function execute (fileName, options) {
   if (options.img || options.all) {
     img()
   }
+  
+  askForInitialCommit()
 }
 
 /**

@@ -213,5 +213,7 @@ module.exports = function (program) {
        * and use the result for the next function
        */
       createRepo(repoTitle, organization, options.public, options.existIgnore)
+      
+      // TODO:: After scaffolding, would be nice to ask if push the repo
     })
 }
