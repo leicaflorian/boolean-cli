@@ -118,6 +118,8 @@ async function showWizard () {
   log(`Welcome to the HTML Scaffold Wizard!
     This wizard will help you to create the basic HTML scaffold for your project.\n`)
   
+  // TODO:: ask for some basic CDN link like BS or Fontawsome
+  
   return await inquirer.prompt([
     {
       name: 'project_name',
@@ -163,9 +165,12 @@ async function showWizard () {
   ])
 }
 
+/**
+ * Ask to initialize git repository
+ */
 function askForInitialCommit () {
-  // if git command not available, avoid asking for initial commit
-  if (!shell.which('git')) {
+  // if git command not available OR git already initialized, skip
+  if (!shell.which('git') || fs.existsSync('.git')) {
     return
   }
   
