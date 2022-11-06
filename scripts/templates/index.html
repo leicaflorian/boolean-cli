@@ -9,19 +9,27 @@
   <link rel="icon" href="imgs/favicon.ico" type="image/x-icon">
 
   <title>{{title}}</title>
+  {{#libraries.length}}
+
+  <!-- Third party libraries -->
+  {{#libraries}}
+  <link rel="stylesheet" href="{{{.}}}">
+  {{/libraries}}
+  {{/libraries.length}}
 
   {{#css}}
+  <!-- Custom css -->
   <link rel="stylesheet" href="css/{{cssFileName}}">
   {{/css}}
 </head>
 
 <body>
 
-  <!-- your code -->
+<!-- your code -->
 
-  {{#js}}
-  <script src="js/{{jsFileName}}"></script>
-  {{/js}}
+{{#js}}
+<script src="js/{{jsFileName}}"></script>
+{{/js}}
 </body>
 
 </html>

@@ -20,7 +20,7 @@ const shell = require('shelljs')
  *
  * @param {{fileName: string, cssFileName?: string, jsFileName?: string, withCss?: boolean, withJs?: boolean}} settings
  */
-function html (settings) {
+async function html (settings) {
   info('[HTML]', 'Starting...')
   
   const mustacheOptions = {
@@ -29,6 +29,13 @@ function html (settings) {
     cssFileName: prepareFileName(settings.cssFileName, 'css', 'style'),
     js: settings.withJs,
     jsFileName: prepareFileName(settings.jsFileName, 'js', 'main')
+  }
+  
+  // get the list of third party libraries to add
+  const extraLibraries = await askForLibraries()
+  
+  if (extraLibraries.length > 0) {
+    mustacheOptions.libraries = extraLibraries
   }
   
   const htmlFile = prepareFileName(settings.fileName, 'html', 'index')
@@ -170,7 +177,7 @@ async function showWizard () {
  */
 function askForInitialCommit () {
   // if git command not available OR git already initialized, skip
-  if (!shell.which('git') || shell.exec('git log --reverse', {silent: true}).code === 0) {
+  if (!shell.which('git') || shell.exec('git log --reverse', { silent: true }).code === 0) {
     return
   }
   
@@ -195,6 +202,35 @@ function askForInitialCommit () {
   })
 }
 
+async function askForLibraries () {
+  const toReturn = []
+  
+  const answers = await inquirer.prompt([
+    {
+      name: 'libraries',
+      message: `Si desidera aggiungere qualche libreria di terze parti? Lasciare deselezionato per saltare.`,
+      type: 'checkbox',
+      choices: [{
+          name: 'Bootstrap 5',
+          value: 'bs5'
+        }, {
+          name: 'Font Awesome 5',
+          value: 'fa6'
+        }]
+    }
+  ])
+  
+  if (answers.libraries.includes('bs5')) {
+    toReturn.push('https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css')
+  }
+  
+  if (answers.libraries.includes('fa6')) {
+    toReturn.push('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css')
+  }
+  
+  return toReturn
+}
+
 /**
  * @param {string} fileName
  * @param {ScaffoldOptions} options
@@ -215,7 +251,7 @@ async function execute (fileName, options) {
   }
   
   if (options.html || options.all) {
-    html({
+    await html({
         fileName: typeof options.html === 'string' ? options.html : fileName,
         cssFileName: typeof options.css === 'string' ? options.css : fileName,
         jsFileName: typeof options.js === 'string' ? options.js : fileName,
