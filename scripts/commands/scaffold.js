@@ -10,8 +10,8 @@ const { startCase } = require('lodash')
 const { Command } = require('commander')
 const inquirer = require('inquirer')
 const { readTemplate, makeFolder, getPath, prepareFileName } = require('../utilities/fs')
-const { info, error, log } = require('../utilities/logs')
-const chalk = require('chalk')
+const { info, log } = require('../utilities/logs')
+// const chalk = require('chalk')
 const { writeSection } = require('../utilities/ui')
 const shell = require('shelljs')
 
@@ -170,7 +170,7 @@ async function showWizard () {
  */
 function askForInitialCommit () {
   // if git command not available OR git already initialized, skip
-  if (!shell.which('git') || fs.existsSync('.git')) {
+  if (!shell.which('git') || shell.exec('git log --reverse', {silent: true}).code === 0) {
     return
   }
   
