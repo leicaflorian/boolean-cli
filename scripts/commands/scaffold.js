@@ -116,6 +116,20 @@ function addFavIcon () {
   }
 }
 
+function readme (fileName) {
+  info('[README]', 'Starting...')
+  
+  const readmeFile = 'README.md'
+  const template = readTemplate('README.md', {
+    title: startCase(path.basename(path.resolve('.')))
+  })
+  
+  fs.writeFileSync(`./${readmeFile}`, template)
+  
+  info('    ', `Created '${readmeFile}'`)
+  info('    ', 'Completed!\n')
+}
+
 /**
  * Show a wizard for scaffolding a new project
  *
@@ -124,8 +138,6 @@ function addFavIcon () {
 async function showWizard () {
   log(`Welcome to the HTML Scaffold Wizard!
     This wizard will help you to create the basic HTML scaffold for your project.\n`)
-  
-  // TODO:: ask for some basic CDN link like BS or Fontawsome
   
   return await inquirer.prompt([
     {
@@ -211,12 +223,12 @@ async function askForLibraries () {
       message: `Si desidera aggiungere qualche libreria di terze parti? Lasciare deselezionato per saltare.`,
       type: 'checkbox',
       choices: [{
-          name: 'Bootstrap 5',
-          value: 'bs5'
-        }, {
-          name: 'Font Awesome 5',
-          value: 'fa6'
-        }]
+        name: 'Bootstrap 5',
+        value: 'bs5'
+      }, {
+        name: 'Font Awesome 5',
+        value: 'fa6'
+      }]
     }
   ])
   
@@ -271,6 +283,10 @@ async function execute (fileName, options) {
   
   if (options.img || options.all) {
     img()
+  }
+  
+  if (options.readme || options.all) {
+    readme(fileName)
   }
   
   askForInitialCommit()

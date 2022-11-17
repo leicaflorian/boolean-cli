@@ -5,6 +5,7 @@ export interface ScaffoldOptions {
   css?: string | boolean;
   js?: string | boolean;
   img?: boolean;
+  readme?: boolean;
   all?: boolean;
 }
 
