@@ -9,11 +9,16 @@
   <link rel="icon" href="imgs/favicon.ico" type="image/x-icon">
 
   <title>{{title}}</title>
-  {{#libraries.length}}
 
+  {{#libraries.length}} {{! Show all if any library to add !}}
   <!-- Third party libraries -->
   {{#libraries}}
-  <link rel="stylesheet" href="{{{.}}}">
+  {{#isLink}}
+  <link rel="stylesheet" href="{{{src}}}">
+  {{/isLink}}
+  {{#isScript}}
+  <script src="{{{src}}}"></script>
+  {{/isScript}}
   {{/libraries}}
   {{/libraries.length}}
 

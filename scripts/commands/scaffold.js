@@ -228,16 +228,32 @@ async function askForLibraries () {
       }, {
         name: 'Font Awesome 5',
         value: 'fa6'
+      }, {
+        name: 'Vue 3',
+        value: 'vue'
       }]
     }
   ])
   
   if (answers.libraries.includes('bs5')) {
-    toReturn.push('https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css')
+    toReturn.push({
+      isLink: true,
+      src: 'https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css'
+    })
   }
   
   if (answers.libraries.includes('fa6')) {
-    toReturn.push('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css')
+    toReturn.push({
+      isLink: true,
+      src: 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css'
+    })
+  }
+  
+  if (answers.libraries.includes('vue')) {
+    toReturn.push({
+      isScript: true,
+      src: 'https://unpkg.com/vue@3/dist/vue.global.js'
+    })
   }
   
   return toReturn
