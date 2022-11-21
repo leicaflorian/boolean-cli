@@ -30,7 +30,22 @@
 
 <body>
 
+{{#hasVue}}
+<div id="app">
+  <!-- your code -->
+</div>
+{{/hasVue}}
+{{^hasVue}}
+{{#hasBS}}
+<main class="container pb-5">
+  <h1 class="my-5">{{title}}</h1>
+  <!-- your code -->
+</main>
+{{/hasBS}}
+{{^hasBS}}
 <!-- your code -->
+{{/hasBS}}
+{{/hasVue}}
 
 {{#js}}
 <script src="js/{{jsFileName}}"></script>

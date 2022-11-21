@@ -36,6 +36,8 @@ async function html (settings) {
   
   if (extraLibraries.length > 0) {
     mustacheOptions.libraries = extraLibraries
+    mustacheOptions.hasVue = extraLibraries.find(lib => lib.name === 'vue')
+    mustacheOptions.hasBS = extraLibraries.find(lib => lib.name === 'bootstrap')
   }
   
   const htmlFile = prepareFileName(settings.fileName, 'html', 'index')
@@ -238,6 +240,7 @@ async function askForLibraries () {
   if (answers.libraries.includes('bs5')) {
     toReturn.push({
       isLink: true,
+      name: 'bootstrap',
       src: 'https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css'
     })
   }
@@ -245,6 +248,7 @@ async function askForLibraries () {
   if (answers.libraries.includes('fa6')) {
     toReturn.push({
       isLink: true,
+      name: 'fontawesome',
       src: 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css'
     })
   }
@@ -252,6 +256,7 @@ async function askForLibraries () {
   if (answers.libraries.includes('vue')) {
     toReturn.push({
       isScript: true,
+      name: 'vue',
       src: 'https://unpkg.com/vue@3/dist/vue.global.js'
     })
   }
