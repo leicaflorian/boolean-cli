@@ -32,7 +32,15 @@
 
 {{#hasVue}}
 <div id="app">
-  <!-- your code -->
+  {{#hasBS}}
+  <main class="container pb-5">
+    <h1 class="my-5">{{title}}</h1>
+    <!-- your code -->
+  </main>
+  {{/hasBS}}
+  {{^hasBS}}
+    <!-- your code -->
+  {{/hasBS}}
 </div>
 {{/hasVue}}
 {{^hasVue}}

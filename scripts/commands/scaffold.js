@@ -31,6 +31,8 @@ async function html (settings) {
     jsFileName: prepareFileName(settings.jsFileName, 'js', 'main')
   }
   
+  const toReturn = {};
+  
   // get the list of third party libraries to add
   const extraLibraries = await askForLibraries()
   
@@ -38,6 +40,9 @@ async function html (settings) {
     mustacheOptions.libraries = extraLibraries
     mustacheOptions.hasVue = extraLibraries.find(lib => lib.name === 'vue')
     mustacheOptions.hasBS = extraLibraries.find(lib => lib.name === 'bootstrap')
+  
+    toReturn.hasVue = mustacheOptions.hasVue;
+    toReturn.hasBS = mustacheOptions.hasBS;
   }
   
   const htmlFile = prepareFileName(settings.fileName, 'html', 'index')
@@ -49,6 +54,8 @@ async function html (settings) {
   
   info('      ', `Created '/${htmlFile}'`)
   info('      ', 'Completed!\n')
+  
+  return toReturn
 }
 
 /**
@@ -74,14 +81,15 @@ function css (fileName) {
  * Create necessary files for JS
  *
  * @param {string} fileName
+ * @param {{hasVue: boolean, hasBS: boolean }} extraLibraries
  */
-function js (fileName) {
+function js (fileName, extraLibraries) {
   info('[JS]', 'Starting...')
   
   makeFolder('js')
   
   const jsFile = prepareFileName(fileName, 'js', 'main')
-  const template = readTemplate('main.js')
+  const template = readTemplate('main.js', extraLibraries)
   
   fs.writeFileSync(`js/${jsFile}`, template)
   
@@ -283,8 +291,10 @@ async function execute (fileName, options) {
     })
   }
   
+  let extraLibraries
+  
   if (options.html || options.all) {
-    await html({
+    extraLibraries = await html({
         fileName: typeof options.html === 'string' ? options.html : fileName,
         cssFileName: typeof options.css === 'string' ? options.css : fileName,
         jsFileName: typeof options.js === 'string' ? options.js : fileName,
@@ -299,7 +309,7 @@ async function execute (fileName, options) {
   }
   
   if (options.js) {
-    js(typeof options.js === 'string' ? options.js : fileName)
+    js((typeof options.js === 'string' ? options.js : fileName), extraLibraries)
   }
   
   if (options.img || options.all) {
