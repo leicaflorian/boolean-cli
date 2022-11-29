@@ -31,7 +31,7 @@ async function html (settings) {
     jsFileName: prepareFileName(settings.jsFileName, 'js', 'main')
   }
   
-  const toReturn = {};
+  const toReturn = {}
   
   // get the list of third party libraries to add
   const extraLibraries = await askForLibraries()
@@ -40,9 +40,9 @@ async function html (settings) {
     mustacheOptions.libraries = extraLibraries
     mustacheOptions.hasVue = extraLibraries.find(lib => lib.name === 'vue')
     mustacheOptions.hasBS = extraLibraries.find(lib => lib.name === 'bootstrap')
-  
-    toReturn.hasVue = mustacheOptions.hasVue;
-    toReturn.hasBS = mustacheOptions.hasBS;
+    
+    toReturn.hasVue = mustacheOptions.hasVue
+    toReturn.hasBS = mustacheOptions.hasBS
   }
   
   const htmlFile = prepareFileName(settings.fileName, 'html', 'index')
@@ -171,7 +171,14 @@ async function showWizard () {
       }, {
         name: 'JS',
         value: 'js'
-      }]
+      },
+        new inquirer.Separator(),
+        {
+          name: 'README',
+          value: 'readme',
+          checked: true
+        }
+      ]
     }, {
       name: 'html_file_name',
       message: `Indica il nome del file HTML:`,
@@ -242,7 +249,7 @@ async function askForLibraries () {
         name: 'Vue 3',
         value: 'vue'
       }, {
-        name: "Axios",
+        name: 'Axios',
         value: 'axios'
       }]
     }
@@ -349,6 +356,7 @@ module.exports = function (program) {
     .option('-c, --css [fileName]', 'Basic CSS (default: style.css)')
     .option('-j, --js [fileName]', 'Basic JS (default: main.js)')
     .option('-i, --img', 'Basic Imgs')
+    .option('-r, --readme [fileName]', 'Readme file')
     .showHelpAfterError()
     .action(execute)
 }
