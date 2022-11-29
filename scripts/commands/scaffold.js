@@ -241,6 +241,9 @@ async function askForLibraries () {
       }, {
         name: 'Vue 3',
         value: 'vue'
+      }, {
+        name: "Axios",
+        value: 'axios'
       }]
     }
   ])
@@ -266,6 +269,14 @@ async function askForLibraries () {
       isScript: true,
       name: 'vue',
       src: 'https://unpkg.com/vue@3/dist/vue.global.js'
+    })
+  }
+  
+  if (answers.libraries.includes('axios')) {
+    toReturn.push({
+      isScript: true,
+      name: 'axios',
+      src: 'https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js'
     })
   }
   
