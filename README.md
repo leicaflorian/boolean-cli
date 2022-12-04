@@ -1,5 +1,9 @@
 # Boolean Cli
 
+| :warning:  DEPRECATION WARNING   |
+|-----------------------------------------|
+Library deprecated in favor of [https://github.com/leicaflorian/boolean-cli-ts](https://github.com/leicaflorian/boolean-cli-ts).
+
 This is simple cli created for Boolean students and tutors to simplify the job of each one of them.
 
 ## What does it do?
